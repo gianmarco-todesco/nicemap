@@ -7,7 +7,10 @@ class NicemapGeoJson {
         if(!options.url) throw "Missing parameter 'url'";  
         this.url = options.url;
         this.countryName = options.countryName || "MAPLAB";
-        this.countryCode = options.countryCode || "ISO3CD";        
+        this.countryCode = options.countryCode || "ISO3CD"; 
+        this.scaleFactor = options.scaleFactor || 1;
+        this.offset = options.offset || [0,-0.25];
+               
     }
 
     fetch() {
@@ -91,14 +94,15 @@ class Nicemap {
         this.createTooltip();
         this.createZoomButtons();
 
-        
-        const worldMapUrl = "geo_un_simple_boundaries.geojson";
-        const me = this;
+        this.mapScaleFactor = options.mapData.scaleFactor;
+        this.mapOffset = options.mapData.offset;
 
+        
+        const me = this;
         options.mapData.fetch()
             .then(d=>me.worldMap = d)
             .then(d=>me.redraw());
-        
+
         window.addEventListener('resize', () => me.redraw());        
     }
 
@@ -112,8 +116,10 @@ class Nicemap {
         const unit = width *0.5;
 
         projection
-            .scale(width / (2 * Math.PI) )
-            .translate([width *0.5, height * 0.5 + unit * 0.25]);
+            .scale(this.mapScaleFactor * width / (2 * Math.PI) )
+            .translate([
+                width *0.5 + unit * this.mapOffset[0], 
+                height * 0.5 - unit * this.mapOffset[1]]);
         this.svg
             .attr("width", width)
             .attr("height", height);

@@ -15,7 +15,7 @@
         <script src="data_example.js"></script -->
 
         <!-- Nicemap -->
-        <script src="dist/nicemap.min.js"></script>
+        <script src="dst/nicemap.min.js"></script>
         <link rel="stylesheet" href="src/nicemap.css"/>
 
         <link rel="icon" type="image/png" href="favicon.png">
@@ -57,7 +57,9 @@
             var africaMap = new NicemapGeoJson({
                 url: 'africa.geojson',
                 countryName : 'formal_en', 
-                countryCode : 'un_a3'
+                countryCode : 'un_a3',
+                scaleFactor : 3.5,
+                offset : [-0.3,0.0]
             })
 
             var map1 = new Nicemap({
@@ -72,7 +74,7 @@
                 },
                 mapData : worldMap
             });
-             
+
             var map2 = new Nicemap({
                 containerId:'container2',
                 data: series_2,
