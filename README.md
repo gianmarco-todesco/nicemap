@@ -22,7 +22,8 @@ You need:
 1. Include `D3.js`, `nicemap.map.js` and  `nicemap.css` on your page
 2. Define the data (one or more javascript variables)
 3. Add one or more containers, assigning ID, width and height
-4. Create a `new Nicemap(options)`, passing in at least a `containerId` option
+4. Create one or more `new NicemapGeoJson(options)`, passing URL of the map data
+4. Create one or more `new Nicemap(options)`, passing in at least a `containerId` option and a NicemapGeoJson reference.
 
 
 Example:
@@ -41,11 +42,16 @@ Example:
     <div id="graph1" class="nicemap other-classes"></div>
     ...
     <script>
+        var worldMap = new NicemapGeoJson({
+            url: 'geo_un_simple_boundaries.geojson',
+            countryName : 'MAPLAB',
+            countryCode : 'ISO3CD'
+        });
         var map1 = new Nicemap({
             containerId:'container1',
             data: series_1,
-            map_data: 'geo_un_simple_boundaries.geojson',
-            
+            colorScale: ["#eee", "#2e4"],
+            mapData : worldMap
         });
     </script>
 ```
