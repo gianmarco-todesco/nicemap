@@ -1,5 +1,52 @@
 "use strict";
+let dd;
 
+class NicemapGeoJson {
+    constructor(options) {
+        options = options || {};
+        if(!options.url) throw "Missing parameter 'url'";  
+        this.url = options.url;
+        this.countryName = options.countryName || "MAPLAB";
+        this.countryCode = options.countryCode || "ISO3CD";
+        
+    }
+
+    fetch() {
+        if(this.result === undefined) 
+        {
+            console.log("fetching " + this.url);
+            const me = this;
+            this.result = fetch(this.url)
+                .then(r => r.json())
+                .then(d => me._processResult(d))
+                .catch(e => {
+                    console.error(e);
+                    return me.result = Promise.resolve(null);
+                });
+        }
+        return this.result;
+    }
+
+    _processResult(data) {
+        dd = data;
+        if(typeof(data) != "object" || data.type != "FeatureCollection") 
+            throw "Invalid map data : " + this.url;
+
+        const me = this;
+        data.features = data.features.filter(f => f.properties.ISO3CD != "ATA");
+        data.features.forEach(f => {
+            f._nicemapCountryName = f.properties[me.countryName];
+            f._nicemapCountryCode = f.properties[me.countryCode];
+        });
+        this.result = Promise.resolve(data);
+        return this.result;
+    }
+}
+
+/*
+// 
+// map loader: allows to share maps data among multiple Nicemaps
+//
 class MapLoader {
     constructor() {
         this.dic = {}
@@ -28,10 +75,16 @@ class MapLoader {
 }
 
 const mapLoader = new MapLoader();
+*/
 
 
 class Nicemap {
     
+    // options:
+    //    containerId (mandatory) : identifier of the container
+    //    data : [[countryid1, value1], [countryid2, value2], ....]
+    //    colorScale : 
+    //    mapData : a NicemapGeoJson instance
     constructor(options) {
         options = options || {};
         if(!options.containerId) throw "Missing parameter 'containerId'";        
@@ -39,13 +92,17 @@ class Nicemap {
         const container = this.container = d3.select("#" + containerId).node();
         if(container == null) throw containerId + ": container not found";
 
-        // zoom
+        this.colorScaleArg = options.colorScale || ['white', 'black'];
+        if(Array.isArray(this.colorScaleArg) && this.colorScaleArg.length==2) {}
+        else if(typeof(this.colorScaleArg) == "function") {}
+        else throw "color scale must be an array of two colors or a function that return a d3 color scale";
         
-
+        if(!(options.mapData instanceof NicemapGeoJson)) {
+            throw "mapData must be an instance of NicemapGeoJson";
+        }
+        // zoom
         const zoom = this.zoom = d3.zoom()
             .scaleExtent([1, 40])
-            // 
-            // 
             .on("zoom", zoomed);
 
         // main svg 
@@ -62,72 +119,28 @@ class Nicemap {
         this.projection = d3.geoMercator();
         this.boundaryColor = '#bbb';
 
-        
 
-        this.colorScale = options.colorScale || d3.scaleLinear().range(["#eee", "#2e4"]);    
-        
         this.processData(options.data)
 
         this.createLegend();
         this.createTooltip();
         this.createZoomButtons();
 
-        /*
-        const width = container.node().clientWidth;
-        const height = container.node().clientHeight;
         
-        
-
-        // we use Mercator projection
-        const projection = this.projection = d3.geoMercator()
-            .scale(width / 2 / Math.PI)
-            .translate([width / 2, height *0.7]);
-
-        
-        
-
-        // create the SVG element
-        this.svg = container.append("svg")
-            .attr("width", width)
-            .attr("height", height)
-            .attr("class", "map")
-            
-    
-        // geopath transforms GeoJson feature into SVG path 
-        this.geopath = d3.geoPath().projection(projection);
-
-        // create the tooltip
-        this.createTooltip();
-
-        
-        
-        let mapG = this.mapG = this.svg.append("g");
-
-        function zoomed() {
-            mapG.attr("transform", d3.event.transform);
-        }
-
-        
-        
-        // fetch the map
         const worldMapUrl = "geo_un_simple_boundaries.geojson";
         const me = this;
-        console.log("fetch:"+containerId);
-        fetch(worldMapUrl)
-            .then(d=>d.json())
+
+        options.mapData.fetch()
             .then(d=>me.worldMap = d)
-            .then(d=>me.buildMap(d))
-            .then(d=>console.log("fetched:"+containerId))
-        */
-        const worldMapUrl = "geo_un_simple_boundaries.geojson";
-        const me = this;
+            .then(d=>me.redraw());
+        
+        /*
         mapLoader.fetch(worldMapUrl)
            .then(d=>me.worldMap = d)
            .then(d=>me.redraw());
-        
-        window.addEventListener('resize', () => me.redraw());
-        
-        
+        */
+
+        window.addEventListener('resize', () => me.redraw());        
     }
 
 
@@ -135,9 +148,7 @@ class Nicemap {
         const container = this.container;
         const width = container.clientWidth;
         const height = container.clientHeight;
-        console.log("redraw. ", width, height);
         const projection = this.projection;
-        const ar = width / height;
 
         const unit = width *0.5;
 
@@ -152,7 +163,7 @@ class Nicemap {
         let g = this.mapG
 
         // add countries
-        const features = this.worldMap.features.filter(f=>f.properties.ISO3CD != "ATA");
+        const features = this.worldMap.features;
         const me = this;
         let paths = g.selectAll("path")
             .data(features);
@@ -163,16 +174,16 @@ class Nicemap {
             .style('vector-effect', 'non-scaling-stroke')
           .merge(paths)
             .attr("d", geopath)
-            .style('fill', d => me.getValueColor(d.properties.ISO3CD))
+            .style('fill', d => me.getValueColor(d._nicemapCountryCode))
 
         // handle tooltip
             .on("mouseover", function(d) {
                 this.parentNode.appendChild(this);
                 d3.select(this).style('stroke', 'black');
-                me.showTooltip(d.properties.ISO3CD, d.properties.MAPLAB);
+                me.showTooltip(d);
             })
             .on("mousemove", function(d) {
-                me.showTooltip(d.properties.ISO3CD, d.properties.ROMNAM)
+                me.showTooltip(d)
             })
             .on("mouseout", function(d) {
                 d3.select(this).style('stroke', me.boundaryColor);
@@ -191,6 +202,7 @@ class Nicemap {
             .extent([[0, 0], [width, height]]);
     }
 
+    // compute value range and build the color scale
     processData(series) {        
         const valueTable = this.valueTable = {}
         if(series) {
@@ -199,9 +211,15 @@ class Nicemap {
         } else {
             this.valueRange = [0,1];
         }
-        this.colorScale.domain(this.valueRange); 
-    }
 
+        if(Array.isArray(this.colorScaleArg)) {
+            this.colorScale = d3.scaleLinear()
+                .range(this.colorScaleArg)
+                .domain(this.valueRange);
+        } else if(typeof(this.colorScaleArg) == "function") {
+            this.colorScale = this.colorScaleArg(this.valueRange);
+        }
+    }
 
     // return a color for a given country code
     getValueColor(countryCode) {
@@ -209,39 +227,6 @@ class Nicemap {
         if(v === undefined) return '#eee';
         else return this.colorScale(v);
     }
-
-
-    buildMap() {
-        let g = this.mapG
-
-        // add countries
-        const me = this;
-        let paths = g.selectAll("path")
-            .data(this.worldMap.features.filter(f=>f.properties.ISO3CD != "ATA"))
-            .enter()
-            .append("path")
-            .attr("d", me.geopath)
-            .style('fill', d => me.getValueColor(d.properties.ISO3CD))
-            .style('stroke', me.boundaryColor)
-            .style('vector-effect', 'non-scaling-stroke');
-
-
-        // handle tooltip
-        paths
-            .on("mouseover", function(d) {
-                this.parentNode.appendChild(this);
-                d3.select(this).style('stroke', 'black');
-                me.showTooltip(d.properties.ISO3CD, d.properties.MAPLAB);
-            })
-            .on("mousemove", function(d) {
-                me.showTooltip(d.properties.ISO3CD, d.properties.ROMNAM)
-            })
-            .on("mouseout", function(d) {
-                d3.select(this).style('stroke', me.boundaryColor);
-                me.hideToolTip();
-            });
-    }
-
 
     
     // create a tooltip (see .css file for look&feel)
@@ -258,8 +243,10 @@ class Nicemap {
 
 
     // visualize & hide the tooltip
-    showTooltip(countryCode, countryName) {
-        console.log(countryCode, countryName);
+    showTooltip(d) {
+        const countryCode = d._nicemapCountryCode;
+        const countryName = d._nicemapCountryName;
+        
         let value = this.valueTable[countryCode];
         if(value === undefined) value = "no value";
         let content = "<strong>" + countryName + "</strong>" + 
@@ -287,23 +274,21 @@ class Nicemap {
         const h = 30;
         const gradId =  this.containerId + "-gradient";
         let grad = legend.append("defs")
-          .append("svg:linearGradient")
-          .attr("id", gradId)
-          .attr("x1", "0%")
-          .attr("y1", "100%")
-          .attr("x2", "100%")
-          .attr("y2", "100%")
-          .attr("spreadMethod", "pad");
+            .append("svg:linearGradient")
+            .attr("id", gradId)
+            .attr("x1", "0%")
+            .attr("y1", "100%")
+            .attr("x2", "100%")
+            .attr("y2", "100%")
+            .attr("spreadMethod", "pad");
     
-        grad.append("stop")
-          .attr("offset", "0%")
-          .attr("stop-color", this.colorScale(this.valueRange[0]))
-          .attr("stop-opacity", 1);
-    
-        grad.append("stop")
-          .attr("offset", "100%")
-          .attr("stop-color", this.colorScale(this.valueRange[1]))
-          .attr("stop-opacity", 1);
+        [0,10,20,30,40,50,60,70,80,90,100].forEach(offset => {
+            const v = this.valueRange[0] + (this.valueRange[1]-this.valueRange[0]) * offset * 0.01;
+            grad.append("stop")
+                .attr("offset", offset+"%")
+                .attr("stop-color", this.colorScale(v))
+                .attr("stop-opacity", 1);
+        })
     
         legend.append("rect")
           .attr("width", w)

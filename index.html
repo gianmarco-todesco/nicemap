@@ -8,13 +8,15 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
         <!-- D3.js -->
-        <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.1/d3.js"></script>
+        <!-- script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script -->
 
         <!-- The data values -->
         <script src="data_example.js"></script -->
 
         <!--script src="dist/nicemap.min.js"></script-->
         <script src="src/nicemap.js"></script>
+
         <link rel="stylesheet" href="src/nicemap.css"/>
         <link rel="icon" type="image/png" href="favicon.png">
         <style>
@@ -44,36 +46,39 @@
           </div>
         </div>
         <script> 
+
+            // define the maps
+            var worldMap = new NicemapGeoJson({
+                url: 'geo_un_simple_boundaries.geojson',
+                countryName : 'MAPLAB',
+                countryCode : 'ISO3CD'
+            });
+
+            var africaMap = new NicemapGeoJson({
+                url: 'africa.geojson',
+                countryName : 'formal_en', 
+                countryCode : 'un_a3'
+            })
+
             var map1 = new Nicemap({
                 containerId:'container1',
                 data: series_1,
+                colorScale: function(r) {
+                    //return d3.scaleSequential()
+                    //    .domain(r)
+                    //    .interpolator(
+                    //        d3.piecewise(d3.interpolateRgb.gamma(2.2), ["red", "green", "blue"]));
+                    return d3.scaleLinear().range(["#eee", "#2e4"]).domain(r);
+                },
+                mapData : worldMap
             }); 
             var map2 = new Nicemap({
                 containerId:'container2',
                 data: series_2,
-                colorScale: d3.scaleLinear().range(["orange", "yellow"])
+                colorScale: ["orange", "yellow"],
+                mapData : africaMap
 
             }); 
-        </script>
-        <script>
-            /*
-            let map1
-            let map2
-            window.onload = function() {
-
-                map1 = new NiceMap({
-                     containerId: "container1", 
-                     data: series_1, 
-                     colorScale: d3.scaleLinear().range(["#eee", "#2e4"])
-                 });
-
-                map2 = new NiceMap({
-                     containerId: "container2", 
-                     data: series_2, 
-                     colorScale: d3.scaleLinear().range(["yellow", "red"])
-                 });
-            }
-            */
         </script>
     </body>
 </html>
