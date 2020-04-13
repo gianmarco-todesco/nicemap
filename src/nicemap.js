@@ -4,20 +4,26 @@ class MapLoader {
     constructor() {
         this.dic = {}
     }
+    _processResult(mapUrl, response) {
+        if(!response.ok) {
+            console.log("Error " + r.statusText +"\n" + "Reading " + mapUrl);
+        }
+        try {
+            return this.dic[mapUrl] = Promise.resolve(response.json());
+        }
+        catch(err) {
+            console.log("Error " + err + "\n parsing json : " + mapUrl);
+        }
+        return this.dic[mapUrl] = Promise.resolve(null);
+    }
     fetch(mapUrl) {
         const dic = this.dic;
-        if(dic[mapUrl] !== undefined) 
-            return Promise.resolve(dic[mapUrl]);
-        else {
-            console.log("fetching " + mapUrl)
-            return fetch(mapUrl)
-                .then(r => {
-                    console.log("response:", r)
-                    if(!r.ok) throw Error(r.statusText);
-                    return r.json();
-                })
-                .then(d => dic[mapUrl] = d);
+        const me = this;
+        if(dic[mapUrl] === undefined) {
+            console.log("fetching " + mapUrl);
+            dic[mapUrl] = fetch(mapUrl).then(r => me._processResult(mapUrl, r));
         }
+        return dic[mapUrl];
     }
 }
 
@@ -47,13 +53,14 @@ class Nicemap {
         this.projection = d3.geoMercator();
         this.boundaryColor = '#bbb';
 
-        this.line = this.svg.append('line').style('stroke', 'green');
+        
 
-
-        this.colorScale = options.colorScale || d3.scaleLinear().range(["#eee", "#2e4"]);
+        this.colorScale = options.colorScale || d3.scaleLinear().range(["#eee", "#2e4"]);        
         this.processData(options.data)
 
-        
+        this.createLegend();
+        this.createTooltip();
+
         /*
         const width = container.node().clientWidth;
         const height = container.node().clientHeight;
@@ -95,8 +102,7 @@ class Nicemap {
             mapG.attr("transform", d3.event.transform);
         }
 
-        this.createLegend();
-
+        
         this.createZoomButtons();
 
         // fetch the map
@@ -129,9 +135,6 @@ class Nicemap {
         const projection = this.projection;
         const ar = width / height;
 
-
-        this.line.attr('x1',0).attr('x2',width).attr('y1',height/2).attr('y2',height/2);
-
         const unit = width *0.5;
 
         projection
@@ -155,10 +158,31 @@ class Nicemap {
             .append("path")
             .style('stroke', me.boundaryColor)
             .style('vector-effect', 'non-scaling-stroke')
-            .merge(paths)
+          .merge(paths)
             .attr("d", geopath)
             .style('fill', d => me.getValueColor(d.properties.ISO3CD))
-        
+
+        // handle tooltip
+            .on("mouseover", function(d) {
+                this.parentNode.appendChild(this);
+                d3.select(this).style('stroke', 'black');
+                me.showTooltip(d.properties.ISO3CD, d.properties.MAPLAB);
+            })
+            .on("mousemove", function(d) {
+                me.showTooltip(d.properties.ISO3CD, d.properties.ROMNAM)
+            })
+            .on("mouseout", function(d) {
+                d3.select(this).style('stroke', me.boundaryColor);
+                me.hideToolTip();
+            });
+
+        // update legend
+        const y0 = height - 40;
+        this.legend
+            .attr('visibility', 'visible')
+            .attr("transform", "translate(10, "+y0+")")
+
+
     }
 
     processData(series) {        
@@ -229,6 +253,7 @@ class Nicemap {
 
     // visualize & hide the tooltip
     showTooltip(countryCode, countryName) {
+        console.log(countryCode, countryName);
         let value = this.valueTable[countryCode];
         if(value === undefined) value = "no value";
         let content = "<strong>" + countryName + "</strong>" + 
@@ -249,10 +274,9 @@ class Nicemap {
 
 
     createLegend() {
-        const y0 = 0; // this.container.node().clientHeight - 40;
+        let legend = this.legend = this.svg.append('g');
+        legend.attr('visibility', 'hidden');
 
-        let legend = this.svg.append('g')
-            .attr("transform", "translate(10, "+y0+")")
         const w = 120;
         const h = 30;
         const gradId =  this.containerId + "-gradient";

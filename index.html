@@ -6,7 +6,8 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
         <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
         <script src="data_example.js"></script -->
-        <script src="dist/nicemap.min.js"></script>
+        <!--script src="dist/nicemap.min.js"></script-->
+        <script src="src/nicemap.js"></script>
         <link rel="stylesheet" href="src/nicemap.css"/>
         <link rel="icon" type="image/png" href="favicon.png">
     </head>
@@ -15,7 +16,7 @@
             <div class="row">
               <div class="col-sm nice-map" id="container1">
               </div>
-              <div class="col-sm nice-map" id="container1">
+              <div class="col-sm nice-map" id="container2">
             </div>
           </div>
         </div>
@@ -23,6 +24,10 @@
             var map1 = new Nicemap({
                 containerId:'container1',
                 data: series_1,
+            }); 
+            var map2 = new Nicemap({
+                containerId:'container2',
+                data: series_2,
             }); 
         </script>
         <script>
