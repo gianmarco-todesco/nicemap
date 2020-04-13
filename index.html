@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Nicemap example</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+        <script src="data_example.js"></script -->
+        <script src="dist/nicemap.min.js"></script>
+        <link rel="stylesheet" href="src/nicemap.css"/>
+        <link rel="icon" type="image/png" href="favicon.png">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+              <div class="col-sm nice-map" id="container1">
+              </div>
+              <div class="col-sm nice-map" id="container1">
+            </div>
+          </div>
+        </div>
+        <script> 
+            var map1 = new Nicemap({
+                containerId:'container1',
+                data: series_1,
+            }); 
+        </script>
+        <script>
+            /*
+            let map1
+            let map2
+            window.onload = function() {
+
+                map1 = new NiceMap({
+                     containerId: "container1", 
+                     data: series_1, 
+                     colorScale: d3.scaleLinear().range(["#eee", "#2e4"])
+                 });
+
+                map2 = new NiceMap({
+                     containerId: "container2", 
+                     data: series_2, 
+                     colorScale: d3.scaleLinear().range(["yellow", "red"])
+                 });
+            }
+            */
+        </script>
+    </body>
+</html>

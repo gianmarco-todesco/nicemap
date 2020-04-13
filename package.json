@@ -1,0 +1,30 @@
+{
+  "name": "nicemap",
+  "version": "1.0.0",
+  "description": "A simple maps visualization tool based on D3.js and GeoJson",
+  "main": "\"\"",
+  "dependencies": {
+    "babel": "^6.23.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-minify": "^0.5.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gianmarco-todesco/nicemap.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gianmarco-todesco/nicemap/issues"
+  },
+  "homepage": "https://github.com/gianmarco-todesco/nicemap#readme"
+}
