@@ -17,7 +17,7 @@
    map container look & feel
    (width & height are mandatory)
 */
-.nice-map {
+.nicemap {
     width:400px;
     height:300px;
     border:solid 1px black;
