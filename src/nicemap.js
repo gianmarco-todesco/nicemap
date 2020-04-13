@@ -51,7 +51,7 @@ class Nicemap {
         // main svg 
         this.svg = d3.select(container)
             .append("svg")
-            .attr("class", "nicemap")
+            .attr("class", "nicemap-svg")
             .call(zoom)
             .on("dblclick.zoom", null);
 
@@ -64,7 +64,8 @@ class Nicemap {
 
         
 
-        this.colorScale = options.colorScale || d3.scaleLinear().range(["#eee", "#2e4"]);        
+        this.colorScale = options.colorScale || d3.scaleLinear().range(["#eee", "#2e4"]);    
+        
         this.processData(options.data)
 
         this.createLegend();

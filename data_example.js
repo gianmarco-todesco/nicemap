@@ -3,5 +3,5 @@ const series_1 = [
 ];
 
 const series_2 = [
-    ["RUS",40.0],["GRL",40.0],["KEN",-1.0]
+    ["RUS",40.0],["GRL",40.0],["KEN",-1.0], ["USA", 35.0], ["CAN", 10.0]
 ];
