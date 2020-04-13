@@ -7,8 +7,7 @@ class NicemapGeoJson {
         if(!options.url) throw "Missing parameter 'url'";  
         this.url = options.url;
         this.countryName = options.countryName || "MAPLAB";
-        this.countryCode = options.countryCode || "ISO3CD";
-        
+        this.countryCode = options.countryCode || "ISO3CD";        
     }
 
     fetch() {
@@ -43,40 +42,6 @@ class NicemapGeoJson {
     }
 }
 
-/*
-// 
-// map loader: allows to share maps data among multiple Nicemaps
-//
-class MapLoader {
-    constructor() {
-        this.dic = {}
-    }
-    _processResult(mapUrl, response) {
-        if(!response.ok) {
-            console.log("Error " + r.statusText +"\n" + "Reading " + mapUrl);
-        }
-        try {
-            return this.dic[mapUrl] = Promise.resolve(response.json());
-        }
-        catch(err) {
-            console.log("Error " + err + "\n parsing json : " + mapUrl);
-        }
-        return this.dic[mapUrl] = Promise.resolve(null);
-    }
-    fetch(mapUrl) {
-        const dic = this.dic;
-        const me = this;
-        if(dic[mapUrl] === undefined) {
-            console.log("fetching " + mapUrl);
-            dic[mapUrl] = fetch(mapUrl).then(r => me._processResult(mapUrl, r));
-        }
-        return dic[mapUrl];
-    }
-}
-
-const mapLoader = new MapLoader();
-*/
-
 
 class Nicemap {
     
@@ -102,7 +67,7 @@ class Nicemap {
         }
         // zoom
         const zoom = this.zoom = d3.zoom()
-            .scaleExtent([1, 40])
+            .scaleExtent([1, 30])
             .on("zoom", zoomed);
 
         // main svg 
@@ -134,12 +99,6 @@ class Nicemap {
             .then(d=>me.worldMap = d)
             .then(d=>me.redraw());
         
-        /*
-        mapLoader.fetch(worldMapUrl)
-           .then(d=>me.worldMap = d)
-           .then(d=>me.redraw());
-        */
-
         window.addEventListener('resize', () => me.redraw());        
     }
 
