@@ -39,16 +39,25 @@ class Nicemap {
         const container = this.container = d3.select("#" + containerId).node();
         if(container == null) throw containerId + ": container not found";
 
+        // zoom
+        
+
+        const zoom = this.zoom = d3.zoom()
+            .scaleExtent([1, 40])
+            // 
+            // 
+            .on("zoom", zoomed);
+
+        // main svg 
         this.svg = d3.select(container)
             .append("svg")
-            .attr("class", "nicemap");
+            .attr("class", "nicemap")
+            .call(zoom)
+            .on("dblclick.zoom", null);
 
         let mapG = this.mapG = this.svg.append("g");
-        this.rect = mapG.append('rect')
-            .attr('x',0)
-            .attr('y',0)
-            .style('stroke', 'green')
-            .style('fill', 'none');
+        function zoomed() { mapG.attr("transform", d3.event.transform); }
+
 
         this.projection = d3.geoMercator();
         this.boundaryColor = '#bbb';
@@ -60,6 +69,7 @@ class Nicemap {
 
         this.createLegend();
         this.createTooltip();
+        this.createZoomButtons();
 
         /*
         const width = container.node().clientWidth;
@@ -73,20 +83,14 @@ class Nicemap {
             .translate([width / 2, height *0.7]);
 
         
-        const zoom = this.zoom = d3.zoom()
-            .scaleExtent([1, 40])
-            .translateExtent([[0,0], [width, height]])
-            .extent([[0, 0], [width, height]])
-            .on("zoom", zoomed);
-
+        
 
         // create the SVG element
         this.svg = container.append("svg")
             .attr("width", width)
             .attr("height", height)
             .attr("class", "map")
-            .call(zoom)
-            .on("dblclick.zoom", null)
+            
     
         // geopath transforms GeoJson feature into SVG path 
         this.geopath = d3.geoPath().projection(projection);
@@ -103,8 +107,7 @@ class Nicemap {
         }
 
         
-        this.createZoomButtons();
-
+        
         // fetch the map
         const worldMapUrl = "geo_un_simple_boundaries.geojson";
         const me = this;
@@ -146,7 +149,6 @@ class Nicemap {
         const geopath = d3.geoPath().projection(projection);
 
         let g = this.mapG
-        this.rect.attr('width', width).attr('height', height)
 
         // add countries
         const features = this.worldMap.features.filter(f=>f.properties.ISO3CD != "ATA");
@@ -182,7 +184,10 @@ class Nicemap {
             .attr('visibility', 'visible')
             .attr("transform", "translate(10, "+y0+")")
 
-
+        // update zoom
+        this.zoom
+            .translateExtent([[0,0], [width, height]])
+            .extent([[0, 0], [width, height]]);
     }
 
     processData(series) {        
@@ -323,20 +328,18 @@ class Nicemap {
 
     createZoomButtons()
     {
-        const y0 = this.container.node().clientHeight - 30;
+        // const y0 = this.container.clientHeight - 30;
         const me = this;
         let buttons = this.svg.selectAll('g.buttons')
-            .data(['-','+'])
+            .data(['+','-'])
             .enter()
             .append('g')
             .attr('class', 'nicemap-buttons')
-            .attr('transform', (d,i) => 'translate(20,' + (y0 - i*17) +')')
+            .attr('transform', (d,i) => 'translate(20,' + (10 + i*17) +')')
         buttons.append('circle')
             .attr('r', 8)            
             .on("click", d => {
                 d3.event.stopPropagation();
-                console.log(d)
-                
                 me.svg.transition().call(me.zoom.scaleBy, d == '+' ? 2 : 0.5);
             })
         buttons.append('text')
