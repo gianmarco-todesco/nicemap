@@ -15,7 +15,7 @@
         <script src="data_example.js"></script -->
 
         <!-- Nicemap -->
-        <script src="dist/nicemap.min.js"></script>
+        <script src="src/nicemap.js"></script>
         <link rel="stylesheet" href="src/nicemap.css"/>
 
         <link rel="icon" type="image/png" href="favicon.png">
@@ -65,6 +65,9 @@
             var map1 = new Nicemap({
                 containerId:'container1',
                 data: series_1,
+                dataName: 'RabbitValue',
+                bubbleData : bubbleData,
+                bubbleName: 'Active cases',
                 colorScale: function(r) {
                     //return d3.scaleSequential()
                     //    .domain(r)
