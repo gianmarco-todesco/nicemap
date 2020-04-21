@@ -78,6 +78,9 @@ class Nicemap {
 
         this.dataName = options.dataName || 'value';
         this.bubbleName = options.bubbleName || 'bubble';
+        this.bubbleStroke = options.bubbleStroke || 'red';
+        this.bubbleFill = options.bubbleFill || 'none';
+        this.bubbleUnit = options.bubbleUnit || 0.01;
 
         // zoom
         const zoom = this.zoom = d3.zoom()
@@ -126,17 +129,6 @@ class Nicemap {
 
         window.addEventListener('resize', () => me.redraw());       
         
-        bubbles
-            .attr('pointer-events', 'none')
-            
-
-        bubbles.append('circle')
-            .attr('cx',200)
-            .attr('cy',200)
-            .attr('r',20)
-            .style('stroke', 'red')
-            .style('fill', 'rgba(200,200,200,0.5)')
-            .style('vector-effect', 'non-scaling-stroke')
     }
 
 
@@ -193,7 +185,7 @@ class Nicemap {
         const featuresWithBubbles = features.filter(d=>bubbleDataTable[d._nicemapCountryCode]);
         featuresWithBubbles.forEach(d => {
             d.centroid = projection(d.centroidLatLng);
-            d.bubbleRadius = 2*Math.log(bubbleDataTable[d._nicemapCountryCode]);
+            d.bubbleRadius = height*this.bubbleUnit*Math.log(bubbleDataTable[d._nicemapCountryCode]);
         })
         
         let bubbles = this.bubbles.selectAll("circle")
@@ -203,13 +195,13 @@ class Nicemap {
             .append("circle")
             .attr('class', 'bubble')
             .attr('id', d=>'bubble-' + d._nicemapCountryCode)
-            .style('stroke', 'rgba(250,100,100,0.6)')
+            .style('stroke', this.bubbleStroke)
             .style('vector-effect', 'non-scaling-stroke')
           .merge(bubbles)
             .attr("cx", d=>d.centroid[0])
             .attr("cy", d=>d.centroid[1])
             .attr("r", d=>d.bubbleRadius)
-            .style('fill', 'rgba(250,100,100,0.2)');
+            .style('fill', this.bubbleFill);
             
 
         // update legend

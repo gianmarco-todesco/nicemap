@@ -16,6 +16,7 @@
 
         <!-- Nicemap -->
         <script src="dist/nicemap.min.js"></script>
+        <!-- script src="src/nicemap.js"></script -->
         <link rel="stylesheet" href="src/nicemap.css"/>
 
         <link rel="icon" type="image/png" href="favicon.png">
@@ -68,6 +69,9 @@
                 dataName: 'Price change (%)',
                 bubbleData : bubbleData,
                 bubbleName: 'Active cases',
+                bubbleFill: 'rgba(250,100,100,0.2)',
+                bubbleStroke: 'rgba(250,100,100,0.22)',
+                bubbleUnit: 0.01, 
                 colorScale: function(r) {
                     //return d3.scaleSequential()
                     //    .domain(r)
