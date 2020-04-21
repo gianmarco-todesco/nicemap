@@ -55,3 +55,9 @@ Example:
         });
     </script>
 ```
+
+
+#### Translate & Minify
+
+.\node_modules\.bin\minify src\nicemap.js --out-file dist\nicemap.min.js --mangle.keepClassName
+

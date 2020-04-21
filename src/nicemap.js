@@ -177,7 +177,7 @@ class Nicemap {
         // handle tooltip
             .on("mouseover", function(d) {
                 this.parentNode.appendChild(this);
-                d3.select(this).style('stroke', 'black');
+                d3.select(this).style('stroke', '#FFF');
                 // d3.select('#'+d._nicemapCountryCode+"-bubble").style('stroke','blue')
                 me.showTooltip(d);
             })

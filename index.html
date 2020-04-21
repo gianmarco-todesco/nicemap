@@ -15,7 +15,7 @@
         <script src="data_example.js"></script -->
 
         <!-- Nicemap -->
-        <script src="src/nicemap.js"></script>
+        <script src="dist/nicemap.min.js"></script>
         <link rel="stylesheet" href="src/nicemap.css"/>
 
         <link rel="icon" type="image/png" href="favicon.png">
@@ -65,7 +65,7 @@
             var map1 = new Nicemap({
                 containerId:'container1',
                 data: series_1,
-                dataName: 'RabbitValue',
+                dataName: 'Price change (%)',
                 bubbleData : bubbleData,
                 bubbleName: 'Active cases',
                 colorScale: function(r) {
@@ -81,7 +81,7 @@
             var map2 = new Nicemap({
                 containerId:'container2',
                 data: series_2,
-                colorScale: ["orange", "yellow"],
+                colorScale: ["orange", "green"],
                 mapData : africaMap
             }); 
 
