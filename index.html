@@ -16,12 +16,12 @@
 
         <!-- Nicemap -->
         <script src="dist/nicemap.min.js"></script>
-        <!-- script src="src/nicemap.js"></script -->
         <link rel="stylesheet" href="src/nicemap.css"/>
 
         <link rel="icon" type="image/png" href="favicon.png">
         <style>
             body { padding:20px; }
+            .nicemap { height:300px;}
         </style>
     </head>
     <body>
@@ -38,14 +38,17 @@
             Source file in 
             <a href="http://github.com/gianmarco-todesco/nicemap">http://github.com/gianmarco-todesco/nicemap</a>.
         </p>
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
-              <div class="col-sm nicemap" id="container1">
+              <div class="col-md-4 nicemap" id="container1">
               </div>
-              <div class="col-sm nicemap" id="container2">
+              <div class="col-md-4 nicemap" id="container2">
             </div>
           </div>
         </div>
+
+
+
         <script> 
 
             // define the maps data
@@ -88,6 +91,8 @@
                 colorScale: ["orange", "green"],
                 mapData : africaMap
             }); 
+
+            
 
         </script>
     </body>

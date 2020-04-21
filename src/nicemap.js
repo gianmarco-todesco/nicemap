@@ -197,6 +197,7 @@ class Nicemap {
             .attr('id', d=>'bubble-' + d._nicemapCountryCode)
             .style('stroke', this.bubbleStroke)
             .style('vector-effect', 'non-scaling-stroke')
+            .style('pointer-events', 'none')
           .merge(bubbles)
             .attr("cx", d=>d.centroid[0])
             .attr("cy", d=>d.centroid[1])
