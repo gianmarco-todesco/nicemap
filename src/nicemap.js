@@ -81,7 +81,9 @@ class Nicemap {
         this.bubbleStroke = options.bubbleStroke || 'red';
         this.bubbleFill = options.bubbleFill || 'none';
         this.bubbleUnit = options.bubbleUnit || 0.01;
-
+        this.dataMinSignificantValue = options.dataMinSignificantValue || -1.e60;
+        this.bubbleMinSignificantValue = options.bubbleMinSignificantValue || -1.e60;
+        
         // zoom
         const zoom = this.zoom = d3.zoom()
             .scaleExtent([1, 30])
@@ -289,10 +291,16 @@ class Nicemap {
         const countryCode = d._nicemapCountryCode;
         const countryName = d._nicemapCountryName;
         
+        let valueStr;
         let value = this.valueTable[countryCode];
-        if(value === undefined) value = "no value";
+        if(value === undefined) valueStr = " = no value";
+        else if(value <= this.dataMinSignificantValue)
+            valueStr = " < " + this.dataMinSignificantValue;
+        else
+            valueStr = " = " + value;
+
         let content = "<strong>" + countryName + "</strong>" + 
-            "<br>" + this.dataName + " = " + value;
+            "<br>" + this.dataName + valueStr;
         if(this.bubbleDataTable[countryCode]>0) 
             content += "<br>" + this.bubbleName + " = " + this.bubbleDataTable[countryCode];
         return content;
