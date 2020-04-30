@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="author" content="Gian Marco Todesco"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>Globe</title>
+<style>
+  html, body {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  #renderCanvas {
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    border:solid 1px magenta;
+  }
+</style>
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<script src="https://unpkg.com/earcut@2.2.2/dist/earcut.min.js"></script>
+<!-- The data values -->
+<script src="data_example.js"></script>
+<script src="src/nicemap4.js"></script>
+</head>
+<body>
+<canvas id="renderCanvas"></canvas>
+</body>
+</html>
