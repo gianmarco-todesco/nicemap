@@ -8,6 +8,8 @@ var idMap;
 let idMapCtx;
 let features;
 let countryBorder = null;
+let tooltip;
+let valueTable = {};
 
 window.onload = function() {
 
@@ -58,7 +60,7 @@ window.onload = function() {
 
     this.canvas.addEventListener("mousemove", onMouseMove);
 
-    
+    createToolTip();
 }
 
 function processResult(d) {
@@ -68,7 +70,7 @@ function processResult(d) {
     idMap = document.createElement("canvas");
     idMap.width = idMap.height = idMapSize;
     
-    let tb = tbb = {};
+    let tb = tbb = valueTable = {};
     let minValue , maxValue;
     minValue = maxValue = series_1[0][1];
     series_1.forEach(d => {
@@ -77,7 +79,11 @@ function processResult(d) {
         if(v<minValue)minValue=v;
         else if(v>maxValue) maxValue=v;
     });
-
+    bubbleData.forEach(d => {
+        let v = d[1];
+        let rec = tb[d[0]];
+        if(rec) rec.bubble = v;
+    });
     features = d.features;
 
     let ctx = texture.getContext();
@@ -203,6 +209,7 @@ function processResult(d) {
 }
 
 function onMouseMove(e) {
+    if(!features) return;
     let x = e.clientX;
     let y = e.clientY;
     var ray = scene.createPickingRay(scene.pointerX,scene.pointerY, BABYLON.Matrix.Identity(), camera);	
@@ -246,6 +253,7 @@ function highlight(index) {
     if(index == null || index<0 || index>=features.length) 
     {
         if(countryBorder != null) countryBorder.isVisible = false;
+        hideToolTip();
         return;
     }
     let feature = features[index];
@@ -271,5 +279,41 @@ function highlight(index) {
         countryBorder = BABYLON.MeshBuilder.CreateLineSystem('ls', {lines:lines, instance:countryBorder});
         countryBorder.isVisible = true;
     }
+    showToolTip(scene.pointerX, scene.pointerY, createTooltipText(index));
+}
 
+function createToolTip() 
+{
+    tooltip = document.createElement("div");
+    tooltip.setAttribute('class','tooltip');
+    document.body.appendChild(tooltip);
+}
+
+function showToolTip(x,y,text) {
+    tooltip.style.visibility = 'visible';
+    tooltip.innerHTML = text;
+    tooltip.style.left = x + "px";
+    tooltip.style.top = y + "px";
+}
+
+function hideToolTip() {
+    tooltip.style.visibility = 'hidden';
+    
+}
+
+
+function createTooltipText(index) {
+    const countryCode = features[index].properties.ISO3CD;
+    const countryName = features[index].properties.MAPLAB;
+    
+    let valueStr;
+    let value = valueTable[countryCode].value;
+    if(value === undefined) valueStr = " = no value";
+    else valueStr = " = " + value;
+
+    let content = "<strong>" + countryName + "</strong>" + 
+        "<br>" + "Price change (%)" + valueStr;
+    if(valueTable[countryCode].bubble && valueTable[countryCode].bubble>0) 
+        content += "<br>" + "Cases" + " = " + valueTable[countryCode].bubble;
+    return content;
 }
