@@ -159,7 +159,7 @@ class Nicemap {
         
         var graticule = d3.geoGraticule()
             .extent([[-180, -90], [181,90.01]])
-            .step([20, 15]);
+            .step([10, 5]);
             
 
 
@@ -167,7 +167,7 @@ class Nicemap {
         graticuleLines.exit().remove();
         graticuleLines.enter()
             .append('path').classed('graticule', true)
-            .style('stroke', "#AAA")
+            .style('stroke', "#ddd")
             .style('fill', "none")
             .style('vector-effect', 'non-scaling-stroke')
         .merge(graticuleLines)
