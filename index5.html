@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Nicemap example</title>
+        <meta charset="utf-8">
+
+        <!-- bootstrap, just to test chart resize -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+        <!-- D3.js -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.1/d3.js"></script>
+        <script type="text/javascript" src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+        <!-- script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script -->
+
+        <!-- The data values -->
+        <script src="data_example.js"></script -->
+
+        <!-- Nicemap -->
+        <script src="src/nicemap5.js"></script>
+        <link rel="stylesheet" href="src/nicemap.css"/>
+
+        <link rel="icon" type="image/png" href="favicon.png">
+        <style>
+            body { padding:20px; }
+            .nicemap { height:300px;}
+        </style>
+    </head>
+    <body>
+        <h1>Nicemap</h1>
+        <p>
+            This page is just a test for Nicemap. (Data for the second graph are definitely fake).
+        </p>
+        <ul>
+            <li>Move the mouse over the charts to see country names and values</li>
+            <li>Use mouse-wheel or +/- buttons to zoom-in/zoom-out</li>
+            <li>Resize the window to change maps dimensions and layout</li>
+        </ul>
+        <p>
+            Source file in 
+            <a href="http://github.com/gianmarco-todesco/nicemap">http://github.com/gianmarco-todesco/nicemap</a>.
+        </p>
+        <div class="container-fluid">
+            <div class="row">
+              <div class="col-md-6 nicemap" id="container1"></div>
+            </div>
+          </div>
+        </div>
+
+
+
+        <script> 
+
+            // define the maps data
+            var worldMap = new NicemapGeoJson({
+                url: 'geo_un_simple_boundaries.geojson',
+                countryName : 'MAPLAB',
+                countryCode : 'ISO3CD'
+            });
+
+            var map1 = new Nicemap({
+                containerId:'container1',
+                data: series_1,
+                dataName: 'Price change (%)',
+                dataMinSignificantValue: 2.5,
+                bubbleData : bubbleData,
+                bubbleName: 'Active cases',
+                bubbleFill: 'rgba(250,100,100,0.2)',
+                bubbleStroke: 'rgba(250,100,100,0.22)',
+                bubbleUnit: 0.01, 
+                colorScale: function(r) {
+                    //return d3.scaleSequential()
+                    //    .domain(r)
+                    //    .interpolator(
+                    //        d3.piecewise(d3.interpolateRgb.gamma(2.2), ["red", "green", "blue"]));
+                    return d3.scaleLinear().range(["#EFEFFF","#02386F"]).domain(r);
+                },
+                mapData : worldMap
+            });
+
+            
+
+        </script>
+    </body>
+</html>
