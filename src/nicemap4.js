@@ -220,10 +220,10 @@ function onMouseMove(e) {
         let lat = 90 - Math.acos(p.y / p.length()) * 180.0 / Math.PI;    
         let index = pickCountryIndex(lat,lon);
         if(index>=0) {
-            console.log(lat, lon, features[index].properties.MAPLAB);
+            //console.log(lat, lon, features[index].properties.MAPLAB);
             highlight(index);
         } else {
-            console.log(lat, lon);
+            //console.log(lat, lon);
             highlight(null);
         }
     }
